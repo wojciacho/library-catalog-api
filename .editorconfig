@@ -1,0 +1,4 @@
+root = true
+
+[*.cs]
+dotnet_style_allow_multiple_blank_lines_experimental = false:warning

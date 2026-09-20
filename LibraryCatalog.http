@@ -1,0 +1,52 @@
+@LibraryCatalog_HostAddress = http://localhost:5147
+
+### 1. GET all books (initial state)
+GET {{LibraryCatalog_HostAddress}}/Books
+
+### 2. POST a new book
+POST {{LibraryCatalog_HostAddress}}/Books
+Content-Type: application/json
+
+{
+  "title": "Test Driven Development",
+  "author": "Kent Beck"
+}
+
+### 3. GET all - check that the new book was added
+GET {{LibraryCatalog_HostAddress}}/Books
+
+### 4. GET by id of the newly created book (change id to the one returned by POST)
+GET {{LibraryCatalog_HostAddress}}/Books/1
+
+### 5. PUT - update the newly created book
+PUT {{LibraryCatalog_HostAddress}}/Books/1
+Content-Type: application/json
+
+{
+  "title": "Test Driven Development (2nd Edition)",
+  "author": "Kent Beck"
+}
+
+### 6. GET by id - check that PUT actually changed the data
+GET {{LibraryCatalog_HostAddress}}/Books/1
+
+### 7. DELETE - remove the book
+DELETE {{LibraryCatalog_HostAddress}}/Books/1
+
+### 8. GET all - check it's gone
+GET {{LibraryCatalog_HostAddress}}/Books
+
+### 9. GET by id of the deleted book - should be 404
+GET {{LibraryCatalog_HostAddress}}/Books/1
+
+### 10. PUT on a non-existent id - should be 404
+PUT {{LibraryCatalog_HostAddress}}/Books/999
+Content-Type: application/json
+
+{
+  "title": "Does not exist",
+  "author": "Nobody"
+}
+
+### 11. DELETE on a non-existent id - should be 404
+DELETE {{LibraryCatalog_HostAddress}}/Books/999
