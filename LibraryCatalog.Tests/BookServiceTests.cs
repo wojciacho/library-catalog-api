@@ -2,17 +2,20 @@ using Moq;
 using LibraryCatalog.Services;
 using LibraryCatalog.Repositories;
 using LibraryCatalog.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 public class BookServiceTests
 {
+    private readonly MemoryCache _cache;
     private readonly Mock<IBookRepository> _mockRepository;
     private readonly BookService _service;
     private readonly Book _defaultBook;
 
     public BookServiceTests()
     {
+        _cache = new MemoryCache(new MemoryCacheOptions());
         _mockRepository = new Mock<IBookRepository>();
-        _service = new BookService(_mockRepository.Object);
+        _service = new BookService(_mockRepository.Object, _cache);
         _defaultBook = new Book { Id = 1, Title = "Jacked", Author = "David Kushner" };
     }
 

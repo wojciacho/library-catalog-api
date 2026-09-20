@@ -10,6 +10,9 @@ A REST API backend for managing a library's book catalog — built with ASP.NET 
 - **xUnit** + **Moq** — unit tests
 - **`WebApplicationFactory`** — integration tests against an in-memory SQLite database
 - **Scalar** — interactive API documentation (OpenAPI)
+- **`IMemoryCache`** — response caching with explicit invalidation on writes
+- **`BackgroundService`** — periodic in-process background job
+- **Docker** — multi-stage build for containerized deployment
 
 ## Architecture
 
@@ -22,6 +25,7 @@ Repositories/   → data access (EF Core)
 Data/           → DbContext
 Models/         → domain entities, request DTOs
 Middleware/     → global exception handling
+BackgroundServices/ → periodic background jobs (IHostedService)
 Migrations/     → EF Core migrations
 LibraryCatalog.Tests/ → unit tests (xUnit + Moq) and integration tests (WebApplicationFactory)
 ```
@@ -73,6 +77,15 @@ dotnet run
 ```
 
 The API starts at the address printed in the console (defaults to `http://localhost:5147`). Interactive docs at `/scalar/v1` in development.
+
+## Docker
+
+```bash
+docker build -t library-catalog-api .
+docker run -d -p 8080:8080 -e Jwt__Key="<any long random string>" library-catalog-api
+```
+
+EF Core migrations are applied automatically at startup (`Database.Migrate()` in `Program.cs`), so the container creates its own SQLite schema on first run — no manual migration step needed inside the container. The JWT key is passed as an environment variable (`Jwt__Key`, double underscore — the `IConfiguration` convention for nested keys) rather than baked into the image.
 
 ## Tests
 

@@ -37,12 +37,12 @@ public class BookRepository : IBookRepository
 
     public async Task<List<Book>> GetAllAsync()
     {
-        return await _context.Books.ToListAsync();
+        return await _context.Books.AsNoTracking().ToListAsync();
     }
 
     public async Task<Book?> GetByIdAsync(int id)
     {
-        var bookById = await _context.Books.FindAsync(id);
+        var bookById = await _context.Books.AsNoTracking().Where(b => b.Id == id).FirstOrDefaultAsync();
 
         if (bookById == null)
         {

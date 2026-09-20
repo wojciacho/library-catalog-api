@@ -1,0 +1,12 @@
+bin/
+obj/
+LibraryCatalog.Tests/
+.git/
+.gitignore
+docs/
+*.db
+*.db-shm
+*.db-wal
+.vs/
+.vscode/
+README.md

@@ -25,11 +25,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<LibraryCatalogDbContext>(options =>
                 options.UseSqlite(_connection));
-
-            using var scope = services.BuildServiceProvider().CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<LibraryCatalogDbContext>();
-
-            db.Database.EnsureCreated();
         });
     }
 }

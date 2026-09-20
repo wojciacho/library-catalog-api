@@ -38,12 +38,12 @@ public class MemberRepository : IMemberRepository
     public async Task<List<Member>> GetAllAsync()
 
     {
-        return await _context.Members.ToListAsync();
+        return await _context.Members.AsNoTracking().ToListAsync();
     }
 
     public async Task<Member?> GetByIdAsync(int id)
     {
-        var memberById = await _context.Members.FindAsync(id);
+        var memberById = await _context.Members.AsNoTracking().Where(m => m.Id == id).FirstOrDefaultAsync();
 
         if (memberById == null)
         {

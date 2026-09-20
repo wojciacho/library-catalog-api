@@ -2,9 +2,15 @@ using Moq;
 using LibraryCatalog.Services;
 using LibraryCatalog.Repositories;
 using LibraryCatalog.Models;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using LibraryCatalog.Data;
 
 public class LoanServiceTests
 {
+    private readonly SqliteConnection _connection = new("DataSource=:memory:");
+    private readonly DbContextOptions<LibraryCatalogDbContext> _options;
+    private readonly LibraryCatalogDbContext _context;
     private readonly Mock<ILoanRepository> _mockLoanRepository;
     private readonly Mock<IBookRepository> _mockBookRepository;
     private readonly LoanService _service;
@@ -14,9 +20,13 @@ public class LoanServiceTests
 
     public LoanServiceTests()
     {
+
+        _connection.Open();
+        _options = new DbContextOptionsBuilder<LibraryCatalogDbContext>().UseSqlite(_connection).Options;
+        _context = new LibraryCatalogDbContext(_options);
         _mockLoanRepository = new Mock<ILoanRepository>();
         _mockBookRepository = new Mock<IBookRepository>();
-        _service = new LoanService(_mockLoanRepository.Object, _mockBookRepository.Object);
+        _service = new LoanService(_mockLoanRepository.Object, _mockBookRepository.Object, _context);
         _defaultBook = new Book { Title = "Learn C#", Author = "Wojciech", IsAvailable = true };
         _defaultNotAvailableBook = new Book { Title = "Learn C#", Author = "Wojciech", IsAvailable = false };
         _defaultLoan = new Loan { Id = 1, BookId = 1, MemberId = 1, LoanDate = DateTime.UtcNow, Book = _defaultBook, ReturnDate = null };

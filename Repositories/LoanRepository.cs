@@ -37,12 +37,12 @@ public class LoanRepository : ILoanRepository
 
     public async Task<List<Loan>> GetAllAsync()
     {
-        return await _context.Loans.ToListAsync();
+        return await _context.Loans.AsNoTracking().Include(l => l.Book).Include(l => l.Member).ToListAsync();
     }
 
     public async Task<Loan?> GetByIdAsync(int id)
     {
-        var loanById = await _context.Loans.FindAsync(id);
+        var loanById = await _context.Loans.AsNoTracking().Include(l => l.Book).Include(l => l.Member).Where(l => l.Id == id).FirstOrDefaultAsync();
 
         if (loanById == null)
         {

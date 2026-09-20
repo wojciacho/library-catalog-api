@@ -2,6 +2,7 @@ using LibraryCatalog.Data;
 using LibraryCatalog.Repositories;
 using LibraryCatalog.Services;
 using LibraryCatalog.Middleware;
+using LibraryCatalog.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,6 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
@@ -41,8 +43,14 @@ builder.Services.AddProblemDetails();
 builder.Services.AddDbContext<LibraryCatalogDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("LibraryCatalogDb")));
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddHostedService<ActiveLoansReportService>();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetRequiredService<LibraryCatalogDbContext>().Database.Migrate();
+}
+
 app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.

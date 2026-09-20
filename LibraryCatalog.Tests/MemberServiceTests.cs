@@ -2,17 +2,20 @@ using Moq;
 using LibraryCatalog.Services;
 using LibraryCatalog.Repositories;
 using LibraryCatalog.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 public class MemberServiceTests
 {
+    private readonly MemoryCache _cache;
     private readonly Mock<IMemberRepository> _mockRepository;
     private readonly MemberService _service;
     private readonly Member _defaultMember;
 
     public MemberServiceTests()
     {
+        _cache = new MemoryCache(new MemoryCacheOptions());
         _mockRepository = new Mock<IMemberRepository>();
-        _service = new MemberService(_mockRepository.Object);
+        _service = new MemberService(_mockRepository.Object, _cache);
         _defaultMember = new Member { Name = "Wojciech", Email = "wojciech@learn.com" };
     }
 
