@@ -17,6 +17,9 @@ public class AuthEndpointTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Login_WithValidCredentials_ReturnsOk()
     {
+        // Arrange
+        await _client.PostAsJsonAsync("/auth/register", new RegisterRequest("admin", "password"));
+
         // Act
         var response = await _client.PostAsJsonAsync("/auth/login", new LoginRequest("admin", "password"));
         var token = await response.Content.ReadAsStringAsync();
@@ -29,6 +32,9 @@ public class AuthEndpointTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Login_WithInvalidCredentials_ReturnsUnauthorized()
     {
+        // Arrange
+        await _client.PostAsJsonAsync("/auth/register", new RegisterRequest("admin", "password"));
+
         // Act
         var response = await _client.PostAsJsonAsync("/auth/login", new LoginRequest("dummy", "dummy"));
 
@@ -39,6 +45,9 @@ public class AuthEndpointTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Login_WithInvalidPassword_ReturnsUnauthorized()
     {
+        // Arrange
+        await _client.PostAsJsonAsync("/auth/register", new RegisterRequest("admin", "password"));
+
         // Act
         var response = await _client.PostAsJsonAsync("/auth/login", new LoginRequest("admin", "dummy"));
 

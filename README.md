@@ -32,10 +32,11 @@ LibraryCatalog.Tests/ → unit tests (xUnit + Moq) and integration tests (WebApp
 
 ## Endpoints
 
-All endpoints below require a `Bearer` token except `POST /Auth/login`.
+All endpoints below require a `Bearer` token except `POST /Auth/login` and `POST /Auth/register`.
 
 | Method | Path                | Description                |
 |--------|---------------------|-----------------------------|
+| POST   | `/Auth/register`    | create a new user account   |
 | POST   | `/Auth/login`       | log in, returns a JWT       |
 | GET    | `/Books`            | list all books              |
 | GET    | `/Books/{id}`       | get a single book by id     |
@@ -66,7 +67,12 @@ dotnet user-secrets set "Jwt:Key" "<any long random string>"
 
 In a real deployment this would come from an environment variable (`Jwt__Key`) or a secret manager instead.
 
-Login credentials are intentionally hardcoded (`admin` / `password`) as a deliberate simplification — a real user database with password hashing is a planned future exercise, not yet implemented.
+Users are stored in the database (`Users` table) with passwords hashed via `BCrypt` — plaintext passwords are never persisted. Create an account with `POST /Auth/register`, then obtain a token with `POST /Auth/login`:
+
+```bash
+curl -X POST http://localhost:5147/Auth/register -H "Content-Type: application/json" -d '{"username":"admin","password":"<your password>"}'
+curl -X POST http://localhost:5147/Auth/login -H "Content-Type: application/json" -d '{"username":"admin","password":"<your password>"}'
+```
 
 ## Running
 

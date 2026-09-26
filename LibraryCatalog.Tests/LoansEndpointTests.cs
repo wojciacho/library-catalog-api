@@ -16,6 +16,7 @@ public class LoansEndpointTests : IClassFixture<CustomWebApplicationFactory>
 
     private async Task<(int bookId, int memberId)> SetupAsync()
     {
+        await _client.PostAsJsonAsync("/auth/register", new RegisterRequest("admin", "password"));
         var loginResponse = await _client.PostAsJsonAsync("/auth/login", new LoginRequest("admin", "password"));
         var token = await loginResponse.Content.ReadAsStringAsync();
 

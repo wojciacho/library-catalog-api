@@ -15,6 +15,7 @@ public class MembersEndpointTests : IClassFixture<CustomWebApplicationFactory>
 
     private async Task AuthenticateAsync()
     {
+        await _client.PostAsJsonAsync("/auth/register", new RegisterRequest("admin", "password"));
         var loginResponse = await _client.PostAsJsonAsync("/auth/login", new LoginRequest("admin", "password"));
         var token = await loginResponse.Content.ReadAsStringAsync();
 

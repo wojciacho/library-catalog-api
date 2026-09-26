@@ -1,6 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using LibraryCatalog.Models;
+using LibraryCatalog.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LibraryCatalog.Services;
@@ -8,16 +10,42 @@ namespace LibraryCatalog.Services;
 public class AuthService : IAuthService
 {
 
-    private IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
+    private readonly IUserRepository _userRepository;
 
-    public AuthService(IConfiguration configuration)
+    public AuthService(IConfiguration configuration, IUserRepository userRepository)
     {
         _configuration = configuration;
+        _userRepository = userRepository;
     }
 
-    public string? Login(string username, string password)
+    public async Task<bool> RegisterAsync(string username, string password)
     {
-        if (username != "admin" || password != "password")
+        var user = await _userRepository.GetByUsernameAsync(username);
+
+        if (user != null)
+        {
+            return false;
+        }
+
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+        var newUser = new User { Username = username, PasswordHash = hashedPassword };
+        await _userRepository.AddAsync(newUser);
+        return true;
+    }
+
+    public async Task<string?> LoginAsync(string username, string password)
+    {
+        var user = await _userRepository.GetByUsernameAsync(username);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+
+        if (!isPasswordCorrect)
         {
             return null;
         }

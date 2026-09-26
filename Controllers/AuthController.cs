@@ -16,10 +16,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(LoginRequest login)
+    public async Task<ActionResult<string>> LoginAsync(LoginRequest login)
     {
 
-        var token = _authService.Login(login.Username, login.Password);
+        var token = await _authService.LoginAsync(login.Username, login.Password);
 
         if (token == null)
         {
@@ -28,6 +28,21 @@ public class AuthController : ControllerBase
         else
         {
             return Ok(token);
+        }
+    }
+
+    [HttpPost("register")]
+    public async Task<ActionResult<bool>> RegisterAsync(RegisterRequest register)
+    {
+        var isRegistered = await _authService.RegisterAsync(register.Username, register.Password);
+
+        if (!isRegistered)
+        {
+            return Conflict();
+        }
+        else
+        {
+            return Ok(isRegistered);
         }
     }
 }
